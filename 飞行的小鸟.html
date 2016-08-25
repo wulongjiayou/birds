@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>愤怒的小鸟</title>
+    <style>
+        canvas{
+            display: block;
+            margin: 100px auto;
+        }
+    </style>
+</head>
+<body>
+<canvas id="cvs" width="800" height="600"></canvas>
+</body>
+</html>
+<script src=birds/unit.js></script>
+<script src=birds/getimg.js></script>
+<script src=birds/sky.js></script>
+<script src=birds/land.js></script>
+<script src=birds/bird.js></script>
+<script src=birds/pipe.js></script>
+<script src=birds/text.js></script>
+<script src=birds/drawtext.js></script>
+<script>
+
+//小鸟分行的主函数
+    (function main(){
+        var cvs=document.getElementById("cvs");
+        var ctx=cvs.getContext("2d");
+
+        getImg(function(imgobj) {
+
+            Sky.init(ctx,cvs,imgobj.sky);
+            //创建天空类
+            var sky=new Sky(0,0);
+            var sky2=new Sky(Sky.imgwidth,0);
+            sky.draw();
+            sky2.draw();
+            //创建大地类
+            Land.init(ctx,cvs,imgobj.land);
+            var land=new Land(0,488);
+            var land2=new Land(Land.imgwidth,488);
+            var land3=new Land(2*Land.imgwidth,488);
+            var land4=new Land(3*Land.imgwidth,488);
+            //创建小鸟类
+            Bird.init(ctx,cvs,imgobj.birds);
+            var bird=new Bird(50,300,50,50);
+            bird.blind();
+            //创建管道类
+            Pipe.init(ctx,cvs,imgobj.pipeDown,imgobj.pipeUp);
+            var pipe=new Pipe( 300+Pipe.UPimgwidth*3*0);
+            var pipe2=new Pipe(300+Pipe.UPimgwidth*3*1);
+            var pipe3=new Pipe(300+Pipe.UPimgwidth*3*2);
+            var pipe4=new Pipe(300+Pipe.UPimgwidth*3*3);
+            var pipe5=new Pipe(300+Pipe.UPimgwidth*3*4);
+            var pipe6=new Pipe(300+Pipe.UPimgwidth*3*5);
+
+            //创建文字类
+
+            var text=new Drawtext({
+                ctx:ctx,
+                cvs:cvs,
+                x:800,
+                y:0,
+                font:"900 20px '微软雅黑'",
+                color:"red",
+                align:"right",
+                baseline:"top",
+            });
+
+
+
+                var time=Date.now();
+            //移动
+            var timeID=setInterval(function() {
+                var timeval=Date.now()-time;
+//                console.log(timeval);
+                text.time=timeval
+                //判断小鸟是否飞出去
+                var birdy=bird.y+bird.h/2;
+                var birdx=bird.x+bird.w/2;
+                ctx.rect(0,488,cvs.width,112);
+                ctx.rect(0,488,cvs.width,112);
+                //如果超出画布就清除定时器
+                if(birdy < 0 || ctx.isPointInPath(birdx,birdy)){
+                    clearInterval(timeID);
+//                    alert("Game Over")
+                };
+                //清除画布
+                ctx.clearRect(0,0,cvs.width,cvs.height);
+
+//                天空的移动
+                sky.draw();
+                sky.upadate();
+                sky2.draw();
+                sky2.upadate();
+//                管道的移动
+                ctx.beginPath();
+                pipe.draw();
+                pipe.update();
+                pipe2.draw();
+                pipe2.update();
+                pipe3.draw();
+                pipe3.update();
+                pipe4.draw();
+                pipe4.update();
+                pipe5.draw();
+                pipe5.update();
+                pipe6.draw();
+                pipe6.update();
+
+//                大地的移动
+                land.draw();
+                land.upadate();
+                land2.draw();
+                land2.upadate();
+                land3.draw();
+                land3.upadate();
+                land4.draw();
+                land4.upadate();
+//                小鸟移动
+                bird.draw();
+                bird.upadate();
+//                文字的创建
+                text.gettext();
+            },1000/60 )
+        } )
+    }())
+</script>
